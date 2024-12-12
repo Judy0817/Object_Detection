@@ -25,7 +25,6 @@ os.makedirs(output_folder, exist_ok=True)
 # Define the codec and create VideoWriter object for output video
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-fps = cap.get(cv2.CAP_PROP_FPS)
 out_video_path = 'outputs/output_video_test2.mp4'
 out = cv2.VideoWriter(out_video_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
 
@@ -48,20 +47,26 @@ while True:
     # Annotate the frame with detection results
     annotated_frame = results[0].plot()
 
-    # Save the annotated frame to the output folder
-    output_frame_path = os.path.join(output_folder, f'frame_{frame_count:04d}.jpg')
-    cv2.imwrite(output_frame_path, annotated_frame)
-
-    # Write the annotated frame to the output video
-    out.write(annotated_frame)
-
-    # Extract detection details for the frame
+    # List to store detections for the current frame
     detections = []
+
+    # Inside your loop for handling detections
     for result in results[0].boxes:
+        # Bounding box coordinates (x1, y1, x2, y2)
+        bbox = result.xyxy.tolist()[0]
+
+        # Convert (x1, y1, x2, y2) to (x, y, width, height)
+        x1, y1, x2, y2 = bbox
+        x = int(x1)
+        y = int(y1)
+        width = int(x2 - x1)
+        height = int(y2 - y1)
+
+        # Add detection data
         detections.append({
             'class': model.names[int(result.cls)],
             'confidence': float(result.conf),
-            'box': result.xyxy.tolist()  # Bounding box coordinates
+            'box': bbox
         })
 
     # Append frame data to JSON structure
@@ -71,6 +76,13 @@ while True:
     })
 
     frame_count += 1
+
+    # Save the annotated frame to the output folder
+    output_frame_path = os.path.join(output_folder, f'frame_{frame_count:04d}.jpg')
+    cv2.imwrite(output_frame_path, annotated_frame)
+
+    # Write the annotated frame to the output video
+    out.write(annotated_frame)
 
     # Optional: Display the frame (comment out if not needed)
     cv2.imshow('YOLOv8 Detection', annotated_frame)

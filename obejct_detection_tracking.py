@@ -5,10 +5,10 @@ import json
 from sort import Sort  # Import SORT tracker
 
 # Load the YOLOv8 model
-model = YOLO('yolov8n.pt')  # Use a YOLOv8 model (e.g., yolov8n.pt, yolov8s.pt)
+model = YOLO('model/yolov8n.pt')  # Use a YOLOv8 model (e.g., yolov8n.pt, yolov8s.pt)
 
 # Open the video file
-video_path = 'videos/istockphoto-1336889543-640_adpp_is.mp4'  # Replace with your video file path
+video_path = 'inputs/test2.mp4'  # Replace with your video file path
 cap = cv2.VideoCapture(video_path)
 
 # Check if video file is opened successfully
@@ -24,12 +24,12 @@ os.makedirs(output_folder, exist_ok=True)
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 fps = cap.get(cv2.CAP_PROP_FPS)
-out_video_path = 'output_video.mp4'
+out_video_path = 'outputs/output_video_tracking.mp4'
 out = cv2.VideoWriter(out_video_path, cv2.VideoWriter_fourcc(*'mp4v'), fps, (frame_width, frame_height))
 
 # Create JSON file to store frame data
-json_output_path = 'frame_data.json'
-frame_data = []
+json_output_path = 'extract_frames/frame_data.json'
+frame_data = [] 
 
 # Initialize SORT tracker
 tracker = Sort()
